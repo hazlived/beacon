@@ -1,0 +1,61 @@
+{
+  "prowler_aws": [
+    {
+      "source": "prowler",
+      "control_id": "AWS-CIS-1.1",
+      "title": "Avoid the use of the root account",
+      "severity": "CRITICAL",
+      "resource": "arn:aws:iam::123456789012:root",
+      "description": "Root account has full administrative privileges and was recently logged into without MFA.",
+      "remediation": "Lock root access keys, enforce hardware MFA, and delegate daily admin tasks to IAM roles.",
+      "status": "OPEN",
+      "nciipc_guideline": "NCIIPC-SEC-01 (Access Control & Least Privilege)"
+    },
+    {
+      "source": "prowler",
+      "control_id": "AWS-CIS-2.1.1",
+      "title": "Ensure S3 Bucket Policy restricts public read/write access",
+      "severity": "HIGH",
+      "resource": "s3://corp-db-backups-bucket",
+      "description": "S3 bucket is publicly accessible over the internet allowing unauthenticated data theft.",
+      "remediation": "Enable S3 Block Public Access at bucket and account level, update bucket policy.",
+      "status": "OPEN",
+      "nciipc_guideline": "NCIIPC-DATA-04 (Sensitive Data Protection & Storage Encryption)"
+    },
+    {
+      "source": "prowler",
+      "control_id": "AWS-CIS-3.1",
+      "title": "Ensure CloudTrail is enabled in all regions",
+      "severity": "MEDIUM",
+      "resource": "CloudTrail: ap-south-1",
+      "description": "Multi-region logging is disabled in ap-south-1 (Mumbai).",
+      "remediation": "Configure CloudTrail multi-region trail logging to send logs to centralized S3 bucket.",
+      "status": "RESOLVED",
+      "nciipc_guideline": "NCIIPC-LOG-02 (Centralized Audit Trail & Log Retention)"
+    }
+  ],
+  "kube_bench_k8s": [
+    {
+      "source": "kube-bench",
+      "control_id": "K8S-CIS-1.2.1",
+      "title": "Ensure anonymous requests are rejected by API server",
+      "severity": "CRITICAL",
+      "resource": "kube-apiserver",
+      "description": "Kubernetes API server allows unauthenticated anonymous requests (--anonymous-auth=true).",
+      "remediation": "Edit /etc/kubernetes/manifests/kube-apiserver.yaml and set --anonymous-auth=false.",
+      "status": "OPEN",
+      "nciipc_guideline": "NCIIPC-K8S-01 (Perimeter & API Authentication)"
+    },
+    {
+      "source": "kube-bench",
+      "control_id": "K8S-CIS-4.2.1",
+      "title": "Minimize privileged containers in cluster",
+      "severity": "HIGH",
+      "resource": "pod/monitoring-agent-priv",
+      "description": "Container runs with securityContext.privileged=true allowing container escape.",
+      "remediation": "Drop CAP_SYS_ADMIN capabilities and disable privileged mode in PodSpec.",
+      "status": "OPEN",
+      "nciipc_guideline": "NCIIPC-CONT-03 (Container Isolation & Runtime Security)"
+    }
+  ]
+}
