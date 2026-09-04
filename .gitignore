@@ -51,3 +51,8 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# ML pipeline
+ml/artifacts/
+ml/**/__pycache__/
+*.parquet
