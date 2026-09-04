@@ -20,10 +20,39 @@ def generate_cicids2017_sample(filepath, count=500):
     }
 
     base_time = datetime(2026, 8, 28, 10, 0, 0)
+
+    # Create a few synthetic sessions
+    sessions = [f"SESS_{i:03d}" for i in range(1, 6)]  # SESS_001 .. SESS_005
+    current_session_idx = 0
+    last_stage = "BENIGN"
+
     records = []
 
     for i in range(count):
-        stage = random.choices(stages, weights=[0.5, 0.15, 0.1, 0.1, 0.1, 0.05])[0]
+        # Occasionally move to next session to simulate multiple users
+        if i > 0 and i % (count // len(sessions)) == 0:
+            current_session_idx = (current_session_idx + 1) % len(sessions)
+            last_stage = "BENIGN"
+
+        session_id = sessions[current_session_idx]
+
+        # Progress attack stages within a session
+        if last_stage == "BENIGN":
+            stage = random.choices(["BENIGN", "RECON"], weights=[0.7, 0.3])[0]
+        elif last_stage == "RECON":
+            stage = random.choices(["RECON", "INITIAL_ACCESS"], weights=[0.4, 0.6])[0]
+        elif last_stage == "INITIAL_ACCESS":
+            stage = random.choices(["INITIAL_ACCESS", "CREDENTIAL_ACCESS"], weights=[0.4, 0.6])[0]
+        elif last_stage == "CREDENTIAL_ACCESS":
+            stage = random.choices(["CREDENTIAL_ACCESS", "LATERAL_MOVEMENT"], weights=[0.5, 0.5])[0]
+        elif last_stage == "LATERAL_MOVEMENT":
+            stage = random.choices(["LATERAL_MOVEMENT", "IMPACT", "BENIGN"], weights=[0.4, 0.2, 0.4])[0]
+        else:
+            stage = random.choices(["BENIGN", "RECON"], weights=[0.8, 0.2])[0]
+
+        if stage != "BENIGN":
+            last_stage = stage
+
         label = labels_map[stage]
 
         src_ip = f"192.168.1.{random.randint(10, 250)}" if stage == "BENIGN" else f"10.0.4.{random.randint(1, 50)}"
@@ -55,6 +84,7 @@ def generate_cicids2017_sample(filepath, count=500):
         compliance_score = round(random.uniform(0.4, 0.85), 2)
 
         records.append({
+            "session_id": session_id,
             "src_ip": src_ip,
             "dst_ip": dst_ip,
             "src_port": src_port,
@@ -106,7 +136,7 @@ def generate_lanl_auth_sample(filepath, count=300):
         logout_dt = login_dt + timedelta(minutes=random.randint(15, 240))
         success = random.choices([1, 0], weights=[0.85, 0.15])[0]
         auth_method = random.choice(["Password", "MFA", "SSH-Key", "Kerberos"])
-        
+
         records.append({
             "user_id": user,
             "device_id": device,
@@ -149,10 +179,10 @@ def generate_waf_payloads(filepath):
         {"method": "GET", "path": "/static/css/main.css", "query": "v=1.2", "headers": '{"User-Agent": "Mozilla/5.0"}', "body": "", "label": 0, "attack_type": "BENIGN"},
         {"method": "POST", "path": "/api/v1/user/settings", "query": "", "headers": '{"Authorization": "Bearer eyJhbGci..."}', "body": '{"theme": "dark", "notifications": true}', "label": 0, "attack_type": "BENIGN"},
         {"method": "GET", "path": "/api/v1/products", "query": "category=electronics&page=2&limit=20", "headers": '{"User-Agent": "Mozilla/5.0"}', "body": "", "label": 0, "attack_type": "BENIGN"},
-        {"method": "POST", "path": "/api/contact", "query": "", "headers": '{"Content-Type": "application/x-www-form-urlencoded"}', "body": "name=John+Doe&email=john%40example.com&message=Hello+support", "label": 0, "attack_type": "BENIGN"}
+        {"method": "POST", "path": "/api/contact", "query": "", "headers": '{"Content-Type": "application/x-www-form-urlencoded"}', "body": "name=John+Doe&email=john%40example.com&message=Hello+support", "label": 0, "attack_type": "BENIGN"},
     ]
 
-    # Expand dataset to ~150 samples by duplicating and varying params
+    # Expand dataset to ~130 samples
     expanded = []
     for _ in range(10):
         for item in payloads:

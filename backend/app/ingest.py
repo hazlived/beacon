@@ -9,7 +9,6 @@ from backend.app.db.models import NetworkFlow, AuthLog, WafLog, ComplianceFindin
 _file_seen_signature: Dict[str, Tuple[float, int]] = {}
 
 def parse_datetime_utc_naive(dt_str: str) -> datetime:
-    """Parses datetime strings and guarantees UTC-naive datetime object per user rules."""
     for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S.%f", "%Y-%m-%d"):
         try:
             dt = datetime.strptime(dt_str.strip(), fmt)
@@ -22,7 +21,6 @@ def parse_datetime_utc_naive(dt_str: str) -> datetime:
     return datetime(*dt.utctimetuple()[:6])
 
 def should_skip_file(file_path: str) -> bool:
-    """Tracks (st_mtime, st_size) signature to prevent duplicate file re-reads."""
     if not os.path.exists(file_path):
         return True
     stat = os.stat(file_path)
@@ -42,9 +40,15 @@ def ingest_cicids2017_csv(file_path: str, force: bool = False) -> int:
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
-            for row in reader:
+            for i, row in enumerate(reader):
                 dt = parse_datetime_utc_naive(row["timestamp"])
+
+                session_id = row.get("session_id")
+                if not session_id:
+                    session_id = f"DEFAULT_{i}"
+
                 flow = NetworkFlow(
+                    session_id=session_id,
                     src_ip=row["src_ip"],
                     dst_ip=row["dst_ip"],
                     src_port=int(row["src_port"]),

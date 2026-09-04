@@ -7,6 +7,7 @@ class NetworkFlow(Base):
     __tablename__ = "network_flows"
 
     id = Column(Integer, primary_key=True, index=True)
+    session_id = Column(String(100), index=True)
     src_ip = Column(String(45), index=True)
     dst_ip = Column(String(45), index=True)
     src_port = Column(Integer)
@@ -64,14 +65,14 @@ class ComplianceFinding(Base):
     __tablename__ = "compliance_findings"
 
     id = Column(Integer, primary_key=True, index=True)
-    source = Column(String(50), index=True) # prowler or kube-bench
+    source = Column(String(50), index=True)
     control_id = Column(String(50), index=True)
     title = Column(String(255))
-    severity = Column(String(20), index=True) # LOW, MEDIUM, HIGH, CRITICAL
+    severity = Column(String(20), index=True)
     resource = Column(String(255))
     description = Column(Text)
     remediation = Column(Text)
-    status = Column(String(20), default="OPEN", index=True) # OPEN, ACKED, RESOLVED
+    status = Column(String(20), default="OPEN", index=True)
     nciipc_guideline = Column(String(255))
     plain_english_explanation = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -103,3 +104,44 @@ class AttackSequence(Base):
     escalation_risk = Column(Float)
     confidence = Column(Float)
     updated_at = Column(DateTime, default=datetime.utcnow)
+
+
+class Incident(Base):
+    __tablename__ = "incidents"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(String(100), index=True)
+    session_id = Column(String(100), index=True)
+    severity = Column(String(20), index=True)
+    attack_stage = Column(String(50))
+    trust_score = Column(Float)
+    policy_action = Column(String(50))
+    overall_risk = Column(Float)
+    confidence = Column(Float)
+    status = Column(String(20), default="OPEN")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class IncidentEvent(Base):
+    __tablename__ = "incident_events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    incident_id = Column(Integer, ForeignKey("incidents.id"), index=True)
+    event_type = Column(String(50))
+    description = Column(Text)
+    severity = Column(String(20))
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+class AuditEvent(Base):
+    __tablename__ = "audit_events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    actor = Column(String(100), default="system")
+    action = Column(String(100), index=True)
+    details = Column(Text)
+    timestamp = Column(DateTime, default=datetime.utcnow, index=True)
+
+    # Tamper-evident audit chain fields (optional but recommended)
+    event_hash = Column(String(255), nullable=True)
+    previous_hash = Column(String(255), nullable=True)

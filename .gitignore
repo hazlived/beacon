@@ -38,6 +38,7 @@ yarn-error.log*
 *.sqlite3
 soc_beacon.db
 backend/app/ml/saved_models/
+backend/app/identity/keys/
 
 # System & OS Files
 .DS_Store

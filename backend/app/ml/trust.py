@@ -1,37 +1,41 @@
 from typing import Dict, Any
+from backend.app.ml.correlation import correlate_risks
+
 
 def compute_trust_score(
     identity_trust: float = 1.0,
     waf_risk: float = 0.0,
     behavior_risk: float = 0.0,
     forecast_risk: float = 0.0,
-    compliance_score: float = 1.0
+    compliance_score: float = 1.0,
+    network_risk: float = 0.0,
 ) -> Dict[str, Any]:
-    """
-    Continuous Trust Engine formula fusing identity, WAF, behavior, forecast, and compliance scores.
-    """
-    raw_trust = (
-        0.25 * identity_trust +
-        0.25 * (1.0 - waf_risk) +
-        0.25 * (1.0 - behavior_risk) +
-        0.25 * (1.0 - forecast_risk)
+    correlation = correlate_risks(
+        identity_trust=identity_trust,
+        waf_risk=waf_risk,
+        behavior_risk=behavior_risk,
+        network_risk=network_risk,
+        forecast_risk=forecast_risk,
+        compliance_score=compliance_score,
     )
-    
-    # Cap trust if critical compliance issues exist
-    if compliance_score < 0.6:
-        raw_trust = min(raw_trust, 0.70)
-        
-    final_trust = max(0.0, min(1.0, raw_trust))
 
-    if final_trust >= 0.80:
-        action = "FULL_ACCESS"
-        description = "Unrestricted access granted. Standard telemetry monitoring."
-    elif final_trust >= 0.50:
-        action = "RESTRICTED_ACCESS"
-        description = "Restricted access: Step-up MFA required, write operations blocked on sensitive resources."
+    final_trust = max(0.0, min(1.0, 1.0 - correlation["overall_risk"]))
+
+    action = correlation["action"]
+    if action == "CONTAINMENT":
+        description = (
+            "Session terminated & host isolated: High escalation threat. "
+            "Escalated to SOC analysts."
+        )
+    elif action == "RESTRICTED_ACCESS":
+        description = (
+            "Restricted access: Step-up MFA required, write operations blocked "
+            "on sensitive resources."
+        )
     else:
-        action = "CONTAINMENT"
-        description = "Session terminated & host isolated: High escalation threat. Escalated to SOC analysts."
+        description = (
+            "Unrestricted access granted. Standard telemetry monitoring."
+        )
 
     return {
         "identity_trust": round(identity_trust, 4),
@@ -39,7 +43,13 @@ def compute_trust_score(
         "behavior_risk": round(behavior_risk, 4),
         "forecast_risk": round(forecast_risk, 4),
         "compliance_score": round(compliance_score, 4),
+        "network_risk": round(network_risk, 4),
         "trust_score": round(final_trust, 4),
         "policy_action": action,
-        "policy_description": description
+        "policy_description": description,
+        "overall_risk": correlation["overall_risk"],
+        "signal_agreement": correlation["signal_agreement"],
+        "severity": correlation["severity"],
+        "reasons": correlation["reasons"],
+        "signal_breakdown": correlation["signal_breakdown"],
     }

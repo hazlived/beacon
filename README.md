@@ -6,48 +6,57 @@
 [![React](https://img.shields.io/badge/React-18+-F8F5EE?style=flat-square&logo=react&logoColor=0A0908)](https://react.dev)
 [![License](https://img.shields.io/badge/License-MIT-A8A092?style=flat-square)](LICENSE)
 
-BEACON SOC is an enterprise-grade AI-driven Security Operations Center (SOC) designed for real-time network attack forecasting, insider threat behavioral modeling, smart WAF payload classification, agentless compliance auditing, and continuous zero-trust policy evaluation.
+BEACON SOC is an enterprise-grade AI-driven Security Operations Center (SOC) designed for real-time network attack forecasting, insider threat behavioral modeling, smart WAF payload classification, agentless compliance auditing, Ed25519 cryptographic identity verification, tamper-evident audit logging, and continuous Zero Trust policy evaluation.
 
 ---
 
 ## Executive Overview
 
-BEACON SOC combines machine learning sequence modeling, heterogeneous graph analysis, natural language processing, and continuous risk scoring into a unified threat prevention platform.
+BEACON SOC combines machine learning sequence modeling, heterogeneous graph analysis, natural language processing, asymmetric cryptography, and multi-signal risk correlation into a unified threat prevention platform.
 
 ### Core Architecture & Analytics Layer
 
 1. **AI Network Attack Forecasting Engine (`backend/app/ml/forecast.py`)**
    - **Architecture**: PyTorch Dual-Head LSTM Temporal Sequence Model.
-   - **Sequence Ingestion**: Processes temporal sequences of flow records (~80 features aligned with CIC-IDS2017/UNSW-NB15).
+   - **Sequence Ingestion**: Processes temporal sequences of flow records (~80 features aligned with CIC-IDS2017/UNSW-NB15/DAPT2020).
    - **Output Heads**:
      - `fc_stage`: Predicts current and next MITRE ATT&CK attack stage (`RECON`, `INITIAL_ACCESS`, `CREDENTIAL_ACCESS`, `LATERAL_MOVEMENT`, `IMPACT`, `BENIGN`).
      - `fc_risk`: Regression head estimating escalation risk probability in `[0, 1]`.
 
 2. **Smart WAF Engine (`backend/app/ml/waf.py`)**
-   - **Architecture**: DistilBERT / TF-IDF text classification pipeline.
+   - **Architecture**: Character sub-word TF-IDF vectorizer + Logistic Regression text classification pipeline with heuristic fallback.
    - **Input Serialization**: Serializes HTTP snapshots (`method || path || query || headers || body`).
    - **Classifications**: Classifies payloads into SQL Injection (SQLi), Cross-Site Scripting (XSS), Path Traversal, Command Injection, Brute Force, and BENIGN traffic.
 
 3. **Insider Threat & Graph Behavioral Engine (`backend/app/ml/behavior.py`)**
    - **Architecture**: NetworkX Heterogeneous Relational Graph + Isolation Forest Anomaly Detector.
    - **Graph Entities**: Nodes (`Users`, `Devices`, `Resources`, `IPs`) and Edges (`User -> Device`, `User -> Resource`, `Device -> Device`).
-   - **Anomaly Indicators**: Detects multi-device sprawl, off-hours activity, failed login spikes, and sensitive resource access.
+   - **Anomaly Indicators**: Detects multi-device sprawl, off-hours activity, failed login spikes, and sensitive resource access. Model performance is validated via `eval_behavior.py`.
 
-4. **Continuous Trust Engine (`backend/app/ml/trust.py`)**
-   - **Zero-Trust Score Formula**:
+4. **Multi-Signal Risk Correlation & Continuous Trust Engine (`backend/app/ml/correlation.py` & `trust.py`)**
+   - **Weighted Risk Correlation Formula**:
      ```
-     Trust = 0.25 * Identity + 0.25 * (1 - WAF_Risk) + 0.25 * (1 - Behavior_Risk) + 0.25 * (1 - Forecast_Risk)
+     Overall_Risk = 0.20 * WAF + 0.20 * Behavior + 0.20 * Network + 0.20 * Forecast + 0.15 * Identity_Risk + 0.05 * Compliance_Risk
      ```
    - **Dynamic Enforcement Actions**:
      - **Trust >= 0.8**: `FULL_ACCESS` (Unrestricted access)
      - **0.5 <= Trust < 0.8**: `RESTRICTED_ACCESS` (Step-up MFA required, write operations blocked)
      - **Trust < 0.5**: `CONTAINMENT` (Session termination & host isolation)
 
-5. **Agentless Compliance Engine (`backend/app/ml/compliance.py`)**
+5. **Ed25519 Asymmetric Cryptographic Identity (`backend/app/identity/keys.py`)**
+   - Implements challenge-response authentication using Ed25519 public-key signature verification for passwordless identity trust computation.
+
+6. **Tamper-Evident SHA-256 Audit Chain (`backend/app/audit/chain.py`)**
+   - Maintains a cryptographic hash chain (`previous_hash` & `event_hash`) across security audit events to guarantee audit trail non-repudiation.
+
+7. **Agentless Compliance Engine (`backend/app/ml/compliance.py`)**
    - Parses AWS Prowler cloud audits and Kubernetes kube-bench CIS benchmarks. Generates plain-English security remediation guidance mapped to NCIIPC protection directives.
 
-6. **Live Device Security Scanner (`backend/app/scanner.py`)**
+8. **Live Device Security Scanner (`backend/app/scanner.py`)**
    - Performs real-time host inspection (sockets, listening ports, process metrics) and runs live PyTorch attack sequence forecasting on active local connections.
+
+9. **Attack Analysis Pipeline & Heatmap UI (`frontend/src/components/`)**
+   - Interactive 7-step analysis pipeline visualization (`AttackAnalysisPipeline.jsx`) and MITRE ATT&CK prediction matrix heatmap (`AttackHeatmap.jsx`).
 
 ---
 
@@ -70,8 +79,8 @@ Follow these step-by-step instructions to install and configure BEACON SOC:
 ### Step 1: Clone Repository
 
 ```bash
-git clone https://github.com/your-username/beacon-soc.git
-cd beacon-soc
+git clone https://github.com/hazlived/beacon.git
+cd beacon
 ```
 
 ### Step 2: Set Up Python Backend Environment
@@ -98,9 +107,9 @@ npm install
 cd ..
 ```
 
-### Step 4: Generate Datasets & Train Initial ML Models
+### Step 4: Generate Datasets & Initialize ML Models
 
-Initialize the SQLite database, generate sample datasets, and train all machine learning models:
+Initialize the SQLite database, generate sample datasets with synthetic session IDs, and train all machine learning models:
 
 ```bash
 # Generate synthetic dataset files
@@ -153,7 +162,7 @@ npm run dev
 
 ### Option C: Containerized Deployment via Docker Compose
 
-To deploy the entire stack inside isolated Docker containers:
+To deploy the stack inside isolated Docker containers:
 
 ```bash
 docker-compose up --build
@@ -202,6 +211,12 @@ All backend API endpoints communicate via JSON over HTTP:
 | `GET` | `/api/compliance/findings` | Returns CIS audit findings mapped to NCIIPC guidelines |
 | `POST` | `/api/trust/score` | Computes zero-trust score and recommended policy enforcement |
 | `POST` | `/api/scan/live` | Executes real-time host device security scan and attack forecast |
+| `POST` | `/api/scenarios/execute` | Triggers realistic attack scenario execution & incident creation |
+| `GET` | `/api/incidents` | Lists active security incidents |
+| `GET` | `/api/incidents/{id}/timeline` | Returns event timeline for a specific incident |
+| `POST` | `/api/identity/challenge` | Generates Ed25519 cryptographic authentication challenge |
+| `POST` | `/api/identity/verify` | Verifies Ed25519 challenge signature & returns identity trust |
+| `GET` | `/api/ml/metrics` | Fetches metrics for WAF, Behavior, and Forecast models |
 | `POST` | `/api/system/ingest` | Triggers background dataset ingestion |
 | `POST` | `/api/system/train` | Triggers background ML model retraining |
 
@@ -213,6 +228,7 @@ All backend API endpoints communicate via JSON over HTTP:
 
 | Column Name | Type | Description |
 | :--- | :--- | :--- |
+| `session_id` | String | Session identifier (`SESS_001` .. `SESS_005`) |
 | `src_ip` | String | Source IP address |
 | `dst_ip` | String | Destination IP address |
 | `src_port` | Integer | Source port number |
@@ -247,57 +263,52 @@ All backend API endpoints communicate via JSON over HTTP:
 ## Repository Structure
 
 ```
-beacon-soc/
+beacon/
 ├── backend/
 │   └── app/
+│       ├── audit/
+│       │   ├── __init__.py        # Export verify_audit_chain
+│       │   └── chain.py           # Tamper-evident SHA-256 audit chain verification
 │       ├── cli/
 │       │   └── soc.py             # Typer CLI command application
 │       ├── db/
-│       │   ├── database.py        # SQLAlchemy setup & session manager
-│       │   └── models.py          # SQLAlchemy ORM database models
+│       │   ├── database.py        # SQLAlchemy setup & session manager with expunge_all
+│       │   └── models.py          # ORM models (Flows, Logs, Incidents, AuditEvents)
+│       ├── identity/
+│       │   ├── __init__.py        # Export compute_identity_trust
+│       │   └── keys.py            # Ed25519 keypair & signature verification
 │       ├── ml/
 │       │   ├── behavior.py        # Insider threat graph & Isolation Forest engine
 │       │   ├── compliance.py      # Prowler & kube-bench compliance parser
+│       │   ├── correlation.py     # Multi-signal risk correlation engine
 │       │   ├── forecast.py        # PyTorch Dual-Head LSTM forecasting engine
 │       │   ├── trust.py           # Continuous Trust Engine calculation
-│       │   └── waf.py             # Smart WAF DistilBERT text classifier
+│       │   ├── waf.py             # Smart WAF text classifier
+│       │   └── saved_models/      # Saved ML model checkpoints (.pt, .joblib)
+│       ├── incidents.py           # Incident creation and timeline helper
 │       ├── ingest.py              # Dataset ingestion & UTC-naive normalization
 │       ├── main.py                # FastAPI REST server application
 │       └── scanner.py             # Live host device scanner module
 ├── data/                          # Datasets (CIC-IDS2017, LANL, WAF, Compliance)
-├── frontend/                      # React + Vite web dashboard (Beige & Black theme)
-│   ├── public/
-│   │   └── favicon.svg            # Vector favicon icon
+├── frontend/                      # React + Vite web dashboard
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── BeaconLogo.jsx     # Vector SVG logo icon component
-│   │   │   └── LiveScanner.jsx    # Live Device Scan modal component
+│   │   │   ├── AttackAnalysisPipeline.jsx # 7-stage attack analysis pipeline visualizer
+│   │   │   ├── AttackHeatmap.jsx          # MITRE ATT&CK confidence heatmap matrix
+│   │   │   ├── BeaconLogo.jsx             # Vector SVG logo icon component
+│   │   │   └── LiveScanner.jsx            # Live Device Scan modal component
 │   │   ├── pages/                 # Overview, Network, WAF, Behavior, Forecast, Compliance
 │   │   ├── App.jsx                # Main React App shell & navigation
 │   │   └── index.css              # Beige & Black CSS design system
+├── ml/                            # Research & benchmarking pipeline (PyTorch + DAPT2020)
+├── scripts/
+│   └── generate_sample_data.py    # Synthetic dataset generator with session modeling
+├── eval_behavior.py               # Behavior model evaluation script
 ├── docker-compose.yml             # Docker compose deployment script
 ├── requirements.txt               # Python dependencies file
 ├── run.py                         # Single-command application runner
 └── README.md                      # Platform documentation
 ```
-
----
-
-## Troubleshooting & FAQ
-
-### 1. Port 8000 or 5173 is already in use
-If port 8000 or 5173 is occupied by another process:
-```bash
-# Windows
-powershell -Command "Get-Process -Id (Get-NetTCPConnection -LocalPort 8000).OwningProcess | Stop-Process -Force"
-
-# Linux / macOS
-fuser -k 8000/tcp
-fuser -k 5173/tcp
-```
-
-### 2. Timezone offset error in SQLite
-Ensure all incoming datetimes pass through `parse_datetime_utc_naive()` in `backend/app/ingest.py` to prevent offset-aware and offset-naive comparison conflicts.
 
 ---
 
